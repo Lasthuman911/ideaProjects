@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--定义组件扫描的包,就不用再xml中显示的定义bean了，在类上面加@Compoment等注解即可-->
+    <context:component-scan base-package="com.light.spring4.aop.xml"/>
+
+    <!--order:Spring默认以aspect的定义顺序作为织入顺序,order属性的数字就是横切关注点的顺序-->
+    <aop:config>
+        <!--aop定义切面:ref:切面类,就是切面要做的事-->
+        <aop:aspect id="time" ref="timeHandle" order="1">
+            <!--定义切点:通知和一个切入点表达式关联，并在满足这个切入点的连接点上运行-->
+            <aop:pointcut id="addTime" expression="execution(* com.light.spring4.aop.xml.Person.*(..))"/>
+            <!--应用前置通知-->
+            <aop:before method="printCurrentTime" pointcut-ref="addTime"/>
+            <!--应用后置通知-->
+            <aop:after method="printCurrentTime" pointcut-ref="addTime"/>
+        </aop:aspect>
+    </aop:config>
+
+    <aop:config>
+        <aop:aspect id="log" ref="logHandle" order="2">
+            <aop:pointcut id="addLog" expression="execution(* com.light.spring4.aop.xml.Person.*(..))"/>
+            <aop:before method="logBefore" pointcut-ref="addLog"/>
+            <aop:after method="logAfter" pointcut-ref="addLog"/>
+        </aop:aspect>
+    </aop:config>
+
+    <!-- aop代理设置:proxy-target-class
+        设置为true：强制使用CGLIB生成代理
+        设置为false或者这个属性被省略，那么基于jdk接口的代理将起作用-->
+    <!--<aop:aspectj-autoproxy  proxy-target-class="true"/>-->
+
+</beans>
